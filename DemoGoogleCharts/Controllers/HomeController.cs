@@ -9,10 +9,12 @@ namespace DemoGoogleCharts.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
@@ -30,7 +32,7 @@ namespace DemoGoogleCharts.Controllers
         {
             string query = "SELECT ShipCity, COUNT(orderid) TotalOrders FROM Orders WHERE ShipCountry = 'USA' GROUP BY ShipCity";
 
-            string constr = @"Data Source=.\sqlexpress;Initial Catalog=northwind;integrated security=true";
+            // string constr = @"Data Source=.\sqlexpress;Initial Catalog=northwind;integrated security=true";
             
             List<object> chartData = new List<object>();
             
@@ -38,7 +40,7 @@ namespace DemoGoogleCharts.Controllers
                             {
                             "ShipCity", "TotalOrders"
                             });
-            using (SqlConnection con = new SqlConnection(constr))
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("Northwind")))
             {
                 using (SqlCommand cmd = new SqlCommand(query))
                 {
